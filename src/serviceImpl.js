@@ -7,7 +7,7 @@ let index = 0;
 const sock = new SockJS('todo');
 
 sock.onopen = function() {
-  //todo communicate to server the protocol type (binary or string)
+  //todo communicate to server the protocol type (binary or string) - js only supports string
   console.log('open');
 };
 
@@ -27,16 +27,16 @@ sock.onclose = function() {
 };
 
 function serviceInterceptor(serviceName, requestData, callback) {
-  //todo create Request wrapper proto message and inject index and convert to JSON
+  index++;
 
   try {
-    index++;
-
+    //todo create Request wrapper proto message and inject index and convert all to JSON
+    callbacks[index] = callback;
     sock.send(requestData)
 
-    callbacks[index] = callback;
   } catch (error) {
     console.error(error);
+    delete callbacks[index]
     throw error; //todo create custom exception
   }
 }
