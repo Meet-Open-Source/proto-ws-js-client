@@ -37,7 +37,7 @@ function serviceInterceptor(serviceName, requestData, callback) {
   } catch (error) {
     console.error(error);
     delete callbacks[index]
-    throw error; //todo create custom exception
+    callback(error, null)
   }
 }
 
