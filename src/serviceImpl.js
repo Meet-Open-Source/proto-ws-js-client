@@ -12,14 +12,11 @@ sock.onopen = function() {
 };
 
 sock.onmessage = function(event) {
-
   if(event.data.error != null) { //todo data need to be converted to proto msgs from json string
     callbacks[event.data.index](event.data.error, null)
   } else {
     callbacks[event.data.index](null, event.data)
   }
-
-  sock.close();
 };
 
 sock.onclose = function() {
