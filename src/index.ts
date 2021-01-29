@@ -1,37 +1,30 @@
 import SockJS from 'sockjs-client';
 
 import {WsError, WsMessage, WsRequest} from "proto-ws-shared-structs";
+import { Ws } from "./Ws";
 
 const callbacks = new Map<number, (error: any, response: any) => void>();
 //todo create a timer for cleaning the callbacks (configurable timout - default 30sec)
 
 let index = 0;
 
-const sock = new SockJS('todo');
+const socket = new Ws();
 
-sock.onopen = function () {
-    console.log('open');
-};
-
-sock.onmessage = function (event) {
-    const wsMessage = event.data as WsMessage
-    const index = wsMessage.getIndex()
-    const callback = callbacks.get(index);
-
-    if (callback) {
-        if (wsMessage.hasError()) {
-            callback(wsMessage.getError(), null);
-        }
-
-        if (wsMessage.hasResponse()) {
-            callback(null, wsMessage.getResponse()?.getPayload());
-        }
-    }
-};
-
-sock.onclose = function () {
-    console.log('close');
-};
+// sock.onmessage = function (event) {
+//     const wsMessage = event.data as WsMessage
+//     const index = wsMessage.getIndex()
+//     const callback = callbacks.get(index);
+//
+//     if (callback) {
+//         if (wsMessage.hasError()) {
+//             callback(wsMessage.getError(), null);
+//         }
+//
+//         if (wsMessage.hasResponse()) {
+//             callback(null, wsMessage.getResponse()?.getPayload());
+//         }
+//     }
+// };
 
 export function serviceInterceptor(serviceName: string, requestData: Object, callback: (error?: any, response?: any) => void) {
     index++;
@@ -50,7 +43,7 @@ export function serviceInterceptor(serviceName: string, requestData: Object, cal
 
         callbacks.set(index, callback);
 
-        sock.send(message.serializeBinary());
+        socket.send(message.serializeBinary());
 
     } catch (exception) {
         console.error(exception);
