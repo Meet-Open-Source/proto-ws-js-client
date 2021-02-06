@@ -14,7 +14,7 @@ sock.onopen = function () {
 };
 
 sock.onmessage = function (event) {
-    const wsMessage = event.data as WsMessage
+    const wsMessage = WsMessage.deserializeBinary(event.data)
     const index = wsMessage.getIndex()
     const callback = callbacks.get(index);
 
